@@ -81,13 +81,31 @@ def Facteur():
 # ----------------------------------------
 
 def Nombre():
+    nb =""
     if Chiffre() == True:
+        nb = ""
         nb = ord(SymboleCourant(1)) - 0x30
         SymboleSuivant(1)
         while Chiffre() == True:
             nb = nb * 10 + ord(SymboleCourant(1)) - 0x30
             SymboleSuivant(1)
-        codeCible.append("\t\tpush dword ptr " + str(nb))
+
+    if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
+        nb = ""
+        SymboleSuivant(1)
+        while Binaire() == True:
+            nb += SymboleCourant(1)
+            SymboleSuivant(1)
+        nb = int(nb, 2)
+
+    if SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
+        nb = ""
+        SymboleSuivant(1)
+        while Hexa() == True:
+            nb += SymboleCourant(1)
+            SymboleSuivant(1)
+        nb = int(nb, 16)
+    codeCible.append("\t\tpush dword ptr " + str(nb))
 
 # ----------------------------------------
 
@@ -98,6 +116,18 @@ def Chiffre():
         return False
 
 # ----------------------------------------
+
+def Binaire():
+    if SymboleCourant(1) in "01":
+        return True
+    else:
+        return False
+# ---------------------------------------
+def Hexa():
+    if SymboleCourant(1) in "0123456789abcdef" or SymboleCourant(1) in "ABCDEF":
+        return True
+    else:
+        return False
 
 def SymboleCourant(n):
     return programme[posCourante:posCourante + n]
@@ -112,7 +142,7 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> 512 * 17 % 3 + 7 <stop")
+programme = ("start> 0b101 + 0xf0 * 3 *<stop")
 codeCible = []
 posCourante = 0
 
