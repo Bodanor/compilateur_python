@@ -20,6 +20,7 @@ def ExprO():
         nb2 = popResultat()
         nb1 = popResultat()
         resultat.append(nb1 | nb2)
+
 def ExprA():
     ExprPM()
     if SymboleCourant(1) == '&':
@@ -28,8 +29,6 @@ def ExprA():
         nb2 = popResultat()
         nb1 = popResultat()
         resultat.append(nb1 & nb2)
-
-
 
 def ExprPM():
     ExprFD()
@@ -76,14 +75,16 @@ def ExprNV():
         if SymboleCourant(1) == '~':
             SymboleSuivant(1)
             Facteur()
+            nb2 = popResultat()
             nb1 = popResultat()
-            resultat.append(~int(nb1))
+            resultat.append(~int(nb2))
 
         elif SymboleCourant(1) == '-':
             SymboleSuivant(1)
             Facteur()
+            nb2 = popResultat()
             nb1 = popResultat()
-            resultat.append(not int(nb1))
+            resultat.append(int(-nb2))
 # ----------------------------------------
 def Facteur():
     if SymboleCourant(1) == '(':
@@ -157,7 +158,7 @@ def SymboleSuivant(n):
     while posCourante < len(programme) and programme[posCourante] == ' ':
         posCourante = posCourante + 1
 # ----------------------------------------
-programme = ("start" "-(-(144 + 0b11) + ~0xff)" "stop")
+programme = ("start -(-(144 + 0b11) + ~0xff) stop")
 resultat = []
 posCourante = 0
 if Prog() == True:
