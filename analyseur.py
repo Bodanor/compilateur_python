@@ -17,18 +17,12 @@ def ExprO():
     if SymboleCourant(1) == '|':
         SymboleSuivant(1)
         ExprA()
-        nb2 = popResultat()
-        nb1 = popResultat()
-        resultat.append(nb1 | nb2)
+
 def ExprA():
     ExprPM()
     if SymboleCourant(1) == '&':
         SymboleSuivant(1)
         ExprPM()
-        nb2 = popResultat()
-        nb1 = popResultat()
-        resultat.append(nb1 & nb2)
-
 
 
 def ExprPM():
@@ -37,39 +31,50 @@ def ExprPM():
         if SymboleCourant(1) == '+':
             SymboleSuivant(1)
             ExprFD()
-            nb2 = popResultat()
-            nb1 = popResultat()
-            resultat.append(nb1 + nb2)
+
         elif SymboleCourant(1) == '-':
             SymboleSuivant(1)
             ExprFD()
-            nb2 = popResultat()
-            nb1 = popResultat()
-            resultat.append(nb1 - nb2)
+
 
 # ----------------------------------------
 def ExprFD():
-    Facteur()
+    ExprNV()
     while SymboleCourant(1) in "*/%":
         if SymboleCourant(1) == '*':
             SymboleSuivant(1)
-            Facteur()
-            nb2 = popResultat()
-            nb1 = popResultat()
-            resultat.append(nb1 * nb2)
+            ExprNV()
+
         elif SymboleCourant(1) == '/':
             SymboleSuivant(1)
-            Facteur()
-            nb2 = popResultat()
-            nb1 = popResultat()
-            resultat.append(int(nb1 / nb2))
-        elif SymboleCourant(1) =='%':
+            ExprNV()
+
+        elif SymboleCourant(1) == '%':
+            SymboleSuivant(1)
+            ExprNV()
+
+# ----------------------------------------
+def ExprNV():
+    Facteur()
+    while SymboleCourant(1) in "~-":
+        if SymboleCourant(1) == '~':
             SymboleSuivant(1)
             Facteur()
-            nb2 = popResultat()
-            nb1 = popResultat()
-            resultat.append(int(nb1 % nb2))
+
+        elif SymboleCourant(1) == '-':
+            SymboleSuivant(1)
+            Facteur()
 # ----------------------------------------
+def Facteur():
+
+    if SymboleCourant(1) == '(':
+        SymboleSuivant(1)
+        ExprO()
+        if SymboleCourant(1) == ')':
+            SymboleSuivant(1)
+    else:
+        Nombre()
+# -----------------------------------------
 def Nombre():
     nb = ""
     if Chiffre() == True:
@@ -94,20 +99,9 @@ def Nombre():
             nb += SymboleCourant(1)
             SymboleSuivant(1)
         nb = int(nb, 16)
-    resultat.append(nb)
 
-# ---------------------------------------
-def Facteur():
-    if SymboleCourant(1) == '(':
-        SymboleSuivant(1)
-        ExprPM()
-        if SymboleCourant(1) == ')':
-            SymboleSuivant(1)
-    else:
-        Nombre()
+
 # ----------------------------------------
-
-
 def Binaire():
     if SymboleCourant(1) in "01":
         return True
@@ -127,14 +121,6 @@ def Chiffre():
         return False
 
 # ----------------------------------------
-def popResultat():
-    if len(resultat) > 0:
-        return resultat.pop()
-    else:
-        print("Valeur manquante dans l'expression !")
-        exit()
-
-# ----------------------------------------
 def SymboleCourant(n):
     return programme[posCourante:posCourante + n]
 # ---------------------------------------
@@ -144,10 +130,12 @@ def SymboleSuivant(n):
     while posCourante < len(programme) and programme[posCourante] == ' ':
         posCourante = posCourante + 1
 # ----------------------------------------
-programme = ("start" "512 * (144 + 0b11) | 0x12 - 541 & 0xff" "stop")
-resultat = []
+programme = ("start"
+             "-(-(144 + 0b11) + ~0xff)" 
+             "stop")
+
 posCourante = 0
 if Prog() == True:
-    print("Le résultat de l'expression est :", popResultat())
+    print("Analyse reussie !")
 else:
     print("Erreur dans le code source à partir de la " + str(posCourante + 1) + "e position !")
