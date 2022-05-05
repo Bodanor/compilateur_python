@@ -59,18 +59,18 @@ def ExprPM():
 # ----------------------------------------
 
 def ExprFD():
-    Facteur()
+    ExprNV()
     while SymboleCourant(1) in "*/%":
         if SymboleCourant(1) == '*':
             SymboleSuivant(1)
-            Facteur()
+            ExprNV()
             codeCible.append("\t\tpop ebx")
             codeCible.append("\t\tpop eax")
             codeCible.append("\t\timul eax, ebx")
             codeCible.append("\t\tpush eax")
         elif SymboleCourant(1) == '/':
             SymboleSuivant(1)
-            Facteur()
+            ExprNV()
             codeCible.append("\t\tpop ebx")
             codeCible.append("\t\tpop eax")
             codeCible.append("\t\tcdq")
@@ -85,33 +85,22 @@ def ExprFD():
             codeCible.append("\t\tidiv ebx")
             codeCible.append("\t\tpush edx")
 
-# ----------------------------------------
-def Nombre():
-    nb =""
-    if Chiffre() == True:
-        nb = ""
-        nb = ord(SymboleCourant(1)) - 0x30
-        SymboleSuivant(1)
-        while Chiffre() == True:
-            nb = nb * 10 + ord(SymboleCourant(1)) - 0x30
+def ExprNV():
+    Facteur()
+    while SymboleCourant(1) in "~-":
+        if SymboleCourant(1) == '~':
             SymboleSuivant(1)
+            Facteur()
+            codeCible.append("\t\tpop eax")
+            codeCible.append("\t\tnot eax")
+            codeCible.append("\t\tpush eax")
 
-    if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
-        nb = ""
-        SymboleSuivant(1)
-        while Binaire() == True:
-            nb += SymboleCourant(1)
+        elif SymboleCourant(1) == '-':
             SymboleSuivant(1)
-        nb = int(nb, 2)
-
-    if SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
-        nb = ""
-        SymboleSuivant(1)
-        while Hexa() == True:
-            nb += SymboleCourant(1)
-            SymboleSuivant(1)
-        nb = int(nb, 16)
-    codeCible.append("\t\tpush dword ptr " + str(nb))
+            Facteur()
+            codeCible.append("\t\tpop eax")
+            codeCible.append("\t\tneg eax")
+            codeCible.append("\t\tpush eax")
 
 def Facteur():
     if SymboleCourant(1) == '(':
@@ -122,6 +111,34 @@ def Facteur():
     else:
         Nombre()
 
+# ----------------------------------------
+def Nombre():
+
+    if Chiffre() == True:
+        nb = ord(SymboleCourant(1)) - 0x30
+        SymboleSuivant(1)
+        if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
+            SymboleSuivant(1)
+            while Binaire() == True:
+                nb = str(nb)
+                nb += SymboleCourant(1)
+                SymboleSuivant(1)
+            nb = int(nb, 2)
+            codeCible.append("\t\tpush dword ptr " + str(nb))
+
+        elif SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
+            nb = ""
+            SymboleSuivant(1)
+            while Hexa() == True:
+                nb += SymboleCourant(1)
+                SymboleSuivant(1)
+            nb = int(nb, 16)
+            codeCible.append("\t\tpush dword ptr " + str(nb))
+        else:
+            while Chiffre() == True:
+                nb = nb * 10 + ord(SymboleCourant(1)) - 0x30
+                SymboleSuivant(1)
+            codeCible.append("\t\tpush dword ptr " + str(nb))
 # ----------------------------------------
 
 def Binaire():
@@ -158,7 +175,7 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> 512 * (144 + 0b11) | 0x12 - 541 & 0xff <stop")
+programme = ("start> -(-(144 + 0b11) + ~0xff) <stop")
 codeCible = []
 posCourante = 0
 

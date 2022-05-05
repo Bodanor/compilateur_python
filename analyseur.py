@@ -137,5 +137,6 @@ programme = ("start"
 posCourante = 0
 if Prog() == True:
     print("Analyse reussie !")
+
 else:
     print("Erreur dans le code source à partir de la " + str(posCourante + 1) + "e position !")
