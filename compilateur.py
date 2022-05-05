@@ -118,6 +118,7 @@ def Nombre():
         nb += SymboleCourant(1)
         SymboleSuivant(1)
         if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
+            nb += SymboleCourant(1)
             SymboleSuivant(1)
             while Binaire() == True:
                 nb += SymboleCourant(1)
@@ -126,6 +127,7 @@ def Nombre():
             codeCible.append("\t\tpush dword ptr " + str(nb))
 
         elif SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
+            nb += SymboleCourant(1)
             SymboleSuivant(1)
             while Hexa() == True:
                 nb += SymboleCourant(1)

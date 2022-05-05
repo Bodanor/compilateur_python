@@ -78,27 +78,25 @@ def Facteur():
 def Nombre():
     nb = ""
     if Chiffre() == True:
-        nb = ""
-        nb = ord(SymboleCourant(1)) - 0x30
+        nb += SymboleCourant(1)
         SymboleSuivant(1)
-        while Chiffre() == True:
-            nb = nb * 10 + ord(SymboleCourant(1)) - 0x30
+        if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
             SymboleSuivant(1)
-    if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
-        nb = ""
-        SymboleSuivant(1)
-        while Binaire() == True:
-            nb += SymboleCourant(1)
-            SymboleSuivant(1)
-        nb = int(nb, 2)
+            while Binaire() == True:
+                nb += SymboleCourant(1)
+                SymboleSuivant(1)
+            nb = int(nb, 2)
 
-    if SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
-        nb = ""
-        SymboleSuivant(1)
-        while Hexa() == True:
-            nb += SymboleCourant(1)
+        elif SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
             SymboleSuivant(1)
-        nb = int(nb, 16)
+            while Hexa() == True:
+                nb += SymboleCourant(1)
+                SymboleSuivant(1)
+            nb = int(nb, 16)
+        else:
+            while Chiffre() == True:
+                nb += SymboleCourant(1)
+                SymboleSuivant(1)
 
 
 # ----------------------------------------
