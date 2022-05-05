@@ -113,21 +113,19 @@ def Facteur():
 
 # ----------------------------------------
 def Nombre():
-
+    nb = ""
     if Chiffre() == True:
-        nb = ord(SymboleCourant(1)) - 0x30
+        nb += SymboleCourant(1)
         SymboleSuivant(1)
         if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
             SymboleSuivant(1)
             while Binaire() == True:
-                nb = str(nb)
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
             nb = int(nb, 2)
             codeCible.append("\t\tpush dword ptr " + str(nb))
 
         elif SymboleCourant(1) == "x" or SymboleCourant(1) == "x":
-            nb = ""
             SymboleSuivant(1)
             while Hexa() == True:
                 nb += SymboleCourant(1)
@@ -136,7 +134,7 @@ def Nombre():
             codeCible.append("\t\tpush dword ptr " + str(nb))
         else:
             while Chiffre() == True:
-                nb = nb * 10 + ord(SymboleCourant(1)) - 0x30
+                nb += SymboleCourant(1)
                 SymboleSuivant(1)
             codeCible.append("\t\tpush dword ptr " + str(nb))
 # ----------------------------------------
