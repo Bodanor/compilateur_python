@@ -2,7 +2,8 @@ def Prog():
     SymboleSuivant(0)
     if SymboleCourant(5) == "start":
         SymboleSuivant(5)
-        ExprO()
+        Instruction()
+
         if SymboleCourant(4) == "stop":
             SymboleSuivant(4)
             return True
@@ -21,13 +22,13 @@ def Instruction():
         ExprOR()
 
 # ----------------------------------------
-def ExprO():
-    ExprA()
+def ExprOR():
+    ExprAND()
     if SymboleCourant(1) == '|':
         SymboleSuivant(1)
-        ExprA()
+        ExprAND()
 
-def ExprA():
+def ExprAND():
     ExprPM()
     if SymboleCourant(1) == '&':
         SymboleSuivant(1)
@@ -64,15 +65,15 @@ def ExprFD():
 
 # ----------------------------------------
 def ExprNV():
-    Facteur()
+    Factor()
     while SymboleCourant(1) in "~-":
         if SymboleCourant(1) == '~':
             SymboleSuivant(1)
-            Facteur()
+            Factor()
 
         elif SymboleCourant(1) == '-':
             SymboleSuivant(1)
-            Facteur()
+            Factor()
 # ----------------------------------------
 def Factor():
 
@@ -107,8 +108,12 @@ def Nb():
             while Digit() == True:
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
-
-
+# ----------------------------------------
+def Digit():
+    if SymboleCourant(1) in "0123456789":
+        return True
+    else :
+        return False
 # ----------------------------------------
 def Binary():
     if SymboleCourant(1) in "01":
@@ -148,6 +153,12 @@ def Word():
         SymboleSuivant(1)
 
 # ----------------------------------------
+def Alhp() :
+    if SymboleCourant(1) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        return True
+    else:
+        return False
+#-----------------------------------------
 def SymboleCourant(n):
     return programme[posCourante:posCourante + n]
 # ---------------------------------------

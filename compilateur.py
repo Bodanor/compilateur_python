@@ -56,7 +56,7 @@ def ExprOR():
         codeCible.append("\t\tpop eax")
         codeCible.append("\t\tor eax, ebx")
         codeCible.append("\t\tpush eax")
-def ExprA():
+def ExprAND():
     ExprPM()
     if SymboleCourant(1) == '&':
         SymboleSuivant(1)
@@ -169,7 +169,7 @@ def Nb():
             nb = int(nb, 16)
             codeCible.append("\t\tpush dword ptr " + str(nb))
         else:
-            while Chiffre() == True:
+            while Digit() == True:
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
             codeCible.append("\t\tpush dword ptr " + str(nb))
@@ -187,12 +187,48 @@ def Hexa():
     else:
         return False
 
-def Chiffre():
+def Digit():
     if SymboleCourant(1) in "0123456789":
         return True
     else:
         return False
+#-----------------------------------------
+def Var():
+    global word
+    tmp = ""
+    if SymboleCourant(1) == "i":
+        SymboleSuivant(1)
+        Word()
+        tmp = "i" + word
+        word = tmp
+        return True
+    elif SymboleCourant(1) == "s":
+        SymboleSuivant(1)
+        Word()
+        tmp = "s" + word
+        word = tmp
+        return True
+    elif SymboleCourant(1) == "b":
+        SymboleSuivant(1)
+        Word()
+        tmp = "b" + word
+        word = tmp
+        return True
+    else:
+        return False
+#-----------------------------------------
+def Word():
+    global word
+    while Alhp() == True :
+        word += SymboleCourant(1)
+        SymboleSuivant(1)
 
+#-----------------------------------------
+def Alhp() :
+    if SymboleCourant(1) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        return True
+    else:
+        return False
 # ----------------------------------------
 
 
