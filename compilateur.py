@@ -6,10 +6,9 @@ def Prog():
         codeCible.append("{")
         codeCible.append("\t_asm")
         codeCible.append("\t{")
-        ExprO()
+        SuiteInstruction()
         if SymboleCourant(5) == "<stop":
             SymboleSuivant(5)
-            codeCible.append("\t\tpop eax")
             codeCible.append("\t}")
             codeCible.append("}")
             return True
@@ -18,12 +17,41 @@ def Prog():
     else:
         return False
 
+def SuiteInstruction():
+    Instruction()
+    if SymboleCourant(1) == ";":
+        while SymboleCourant(1) == ";":
+            SymboleSuivant(1)
+            Instruction()
+
+
+#-----------------------------------------
+def Instruction():
+    global word
+    if Var() == True:
+        if SymboleCourant(1) == "=":
+            SymboleSuivant(1)
+            while SymboleCourant(1) == " ":
+                SymboleSuivant(1)
+            ExprOR()
+            if word[0] == "i":
+                codeCible.append("\t\tpop {}".format(word))
+            elif word[0] == "s":
+                codeCible.append("\t\tpop eax")
+                codeCible.append("\t\tmov {}, ax".format(word))
+            elif word[0] == "b":
+                codeCible.append("\t\tpop eax")
+                codeCible.append("\t\tmov {}, al".format(word))
+    else:
+        ExprOR()
+        if SymboleCourant(1) == " ":
+            codeCible.append("\t\tpop eax")
 # ----------------------------------------
-def ExprO():
-    ExprA()
+def ExprOR():
+    ExprAND()
     if SymboleCourant(1) == '|':
         SymboleSuivant(1)
-        ExprA()
+        ExprAND()
         codeCible.append("\t\tpop ebx")
         codeCible.append("\t\tpop eax")
         codeCible.append("\t\tor eax, ebx")
@@ -78,7 +106,7 @@ def ExprFD():
             codeCible.append("\t\tpush eax")
         elif SymboleCourant(1) == '%':
             SymboleSuivant(1)
-            Facteur()
+            Factor()
             codeCible.append("\t\tpop ebx")
             codeCible.append("\t\tpop eax")
             codeCible.append("\t\tcdq")
@@ -86,41 +114,47 @@ def ExprFD():
             codeCible.append("\t\tpush edx")
 
 def ExprNV():
-    Facteur()
+    Factor()
     while SymboleCourant(1) in "~-":
         if SymboleCourant(1) == '~':
             SymboleSuivant(1)
-            Facteur()
+            Factor()
             codeCible.append("\t\tpop eax")
             codeCible.append("\t\tnot eax")
             codeCible.append("\t\tpush eax")
 
         elif SymboleCourant(1) == '-':
             SymboleSuivant(1)
-            Facteur()
+            Factor()
             codeCible.append("\t\tpop eax")
             codeCible.append("\t\tneg eax")
             codeCible.append("\t\tpush eax")
 
-def Facteur():
+def Factor():
     if SymboleCourant(1) == '(':
         SymboleSuivant(1)
-        ExprO()
+        ExprOR()
         if SymboleCourant(1) == ')':
             SymboleSuivant(1)
     else:
-        Nombre()
+        Nb()
+        if Var() == True:
+            if SymboleCourant(1) == "=":
+                SymboleSuivant(1)
+                while SymboleCourant(1) == " ":
+                    SymboleSuivant(1)
+                ExprOR()
 
 # ----------------------------------------
-def Nombre():
+def Nb():
     nb = ""
-    if Chiffre() == True:
+    if Digit() == True:
         nb += SymboleCourant(1)
         SymboleSuivant(1)
         if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
             nb += SymboleCourant(1)
             SymboleSuivant(1)
-            while Binaire() == True:
+            while Binary() == True:
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
             nb = int(nb, 2)
@@ -141,7 +175,7 @@ def Nombre():
             codeCible.append("\t\tpush dword ptr " + str(nb))
 # ----------------------------------------
 
-def Binaire():
+def Binary():
     if SymboleCourant(1) in "01":
         return True
     else:
@@ -175,10 +209,10 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> -(-(144 + 0b11) + ~0xff) <stop")
+programme = ("start> sVar = (2 + 33) * 5; bVal = 8 / 2 * 0xf0 sVar = 0b110 + bVal <stop")
 codeCible = []
 posCourante = 0
-
+word = ""
 if Prog() == True:
     for c in codeCible:
         print(c)

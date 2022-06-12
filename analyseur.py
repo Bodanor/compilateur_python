@@ -10,6 +10,15 @@ def Prog():
             return False
     else:
         return False
+def Instruction():
+    if Var() == True:
+        if SymboleCourant(1) == "=":
+            SymboleSuivant(1)
+            while SymboleCourant(1) == " ":
+                SymboleSuivant(1)
+            ExprOR()
+    else:
+        ExprOR()
 
 # ----------------------------------------
 def ExprO():
@@ -65,24 +74,25 @@ def ExprNV():
             SymboleSuivant(1)
             Facteur()
 # ----------------------------------------
-def Facteur():
+def Factor():
 
     if SymboleCourant(1) == '(':
         SymboleSuivant(1)
-        ExprO()
+        ExprOR()
         if SymboleCourant(1) == ')':
             SymboleSuivant(1)
     else:
-        Nombre()
+        Nb()
+        Var()
 # -----------------------------------------
-def Nombre():
+def Nb():
     nb = ""
-    if Chiffre() == True:
+    if Digit() == True:
         nb += SymboleCourant(1)
         SymboleSuivant(1)
         if SymboleCourant(1) == "b" or SymboleCourant(1) == "B":
             SymboleSuivant(1)
-            while Binaire() == True:
+            while Binary() == True:
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
             nb = int(nb, 2)
@@ -94,13 +104,13 @@ def Nombre():
                 SymboleSuivant(1)
             nb = int(nb, 16)
         else:
-            while Chiffre() == True:
+            while Digit() == True:
                 nb += SymboleCourant(1)
                 SymboleSuivant(1)
 
 
 # ----------------------------------------
-def Binaire():
+def Binary():
     if SymboleCourant(1) in "01":
         return True
     else:
@@ -111,12 +121,31 @@ def Hexa():
         return True
     else:
         return False
-# ----------------------------------------
-def Chiffre():
-    if SymboleCourant(1) in "0123456789":
+
+#-----------------------------------------
+def Var():
+    if SymboleCourant(1) == "i":
+        SymboleSuivant(1)
+        Word()
         return True
-    else :
+    elif SymboleCourant(1) == "s":
+        SymboleSuivant(1)
+        Word()
+        return True
+    elif SymboleCourant(1) == "b":
+        SymboleSuivant(1)
+        Word()
+        return True
+    else:
         return False
+
+
+#-----------------------------------------
+def Word():
+    word = ""
+    while Alhp() == True :
+        word += SymboleCourant(1)
+        SymboleSuivant(1)
 
 # ----------------------------------------
 def SymboleCourant(n):
@@ -128,9 +157,7 @@ def SymboleSuivant(n):
     while posCourante < len(programme) and programme[posCourante] == ' ':
         posCourante = posCourante + 1
 # ----------------------------------------
-programme = ("start"
-             "-(-(144 + 0b11) + ~0xff)" 
-             "stop")
+programme = ("start iVar = -(-(144 + 0b11) + ~0xff) stop")
 
 posCourante = 0
 if Prog() == True:
