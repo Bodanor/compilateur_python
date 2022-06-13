@@ -55,14 +55,17 @@ def Instruction():
             while SymboleCourant(1) == " ":
                 SymboleSuivant(1)
             ExprOR()
-            if word[0] == "i":
-                codeCible.append("\t\tpop {}".format(destination_word))
-            elif word[0] == "s":
+            if destination_word[0] == "i":
+                codeCible.append("\t\tpop eax")
+                codeCible.append("\t\tmov {}, eax".format(destination_word))
+            if destination_word[0] == "s":
                 codeCible.append("\t\tpop eax")
                 codeCible.append("\t\tmov {}, ax".format(destination_word))
-            elif word[0] == "b":
+            if destination_word[0] == "b":
                 codeCible.append("\t\tpop eax")
                 codeCible.append("\t\tmov {}, al".format(destination_word))
+
+
     else:
         ExprOR()
         if SymboleCourant(1) == " ":
@@ -153,19 +156,26 @@ def ExprNV():
             codeCible.append("\t\tpush eax")
 
 def Factor():
+    global destination_word
     if SymboleCourant(1) == '(':
         SymboleSuivant(1)
         ExprOR()
         if SymboleCourant(1) == ')':
             SymboleSuivant(1)
-    else:
-        if Digit() == True:
-            Nb()
+    elif Var():
+        while Var():
+            SymboleSuivant(1)
+        if word not in variables:
+            print("Variable innexistante !")
+            SymboleSuivant(1)
+        if word[0:1] in "sb":
+            codeCible.append("\t\tmovsx eax, {}".format(word))
         else:
-            Var()
-            if word not in variables:
-                print("Variable innexistante !")
-                SymboleSuivant(1)
+            codeCible.append("\t\tmov eax, {}".format(word))
+        codeCible.append("\t\tpush eax")
+    else:
+        Nb()
+
 
 # ----------------------------------------
 def Nb():
@@ -256,7 +266,7 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> sVar = (2 + 33) * 5; bVal = 8 / 2 * 0xf0; sVar = 0b110 + bVal <stop")
+programme = ("start> bVar = 3; sVar = 2 + bVar; iNb = 0b110 * sVar; iNb = iNb + 1 <stop")
 codeCible = []
 posCourante = 0
 word = ""
