@@ -28,20 +28,41 @@ def SuiteInstruction():
 #-----------------------------------------
 def Instruction():
     global word
+    global destination_word
+
     if Var() == True:
         if SymboleCourant(1) == "=":
+            destination_word = word
+            if len(variables) == 0:
+                if word[0] == "i":
+                    codeCible.insert(0, "int {};".format(word))
+                elif word[0] == "s":
+                    codeCible.insert(0, "short {};".format(word))
+                elif word[0] == "b":
+                    codeCible.insert(0, "char {};".format(word))
+                variables.append(word)
+
+            if word not in variables:
+                variables.append(word)
+                if word[0] == "i":
+                    codeCible.insert(0, "int {};".format(word))
+                elif word[0] == "s":
+                    codeCible.insert(0, "short {};".format(word))
+                elif word[0] == "b":
+                    codeCible.insert(0, "char {};".format(word))
+
             SymboleSuivant(1)
             while SymboleCourant(1) == " ":
                 SymboleSuivant(1)
             ExprOR()
             if word[0] == "i":
-                codeCible.append("\t\tpop {}".format(word))
+                codeCible.append("\t\tpop {}".format(destination_word))
             elif word[0] == "s":
                 codeCible.append("\t\tpop eax")
-                codeCible.append("\t\tmov {}, ax".format(word))
+                codeCible.append("\t\tmov {}, ax".format(destination_word))
             elif word[0] == "b":
                 codeCible.append("\t\tpop eax")
-                codeCible.append("\t\tmov {}, al".format(word))
+                codeCible.append("\t\tmov {}, al".format(destination_word))
     else:
         ExprOR()
         if SymboleCourant(1) == " ":
@@ -65,6 +86,7 @@ def ExprAND():
         codeCible.append("\t\tpop eax")
         codeCible.append("\t\tand eax, ebx")
         codeCible.append("\t\tpush eax")
+
 
 def ExprPM():
     ExprFD()
@@ -137,13 +159,13 @@ def Factor():
         if SymboleCourant(1) == ')':
             SymboleSuivant(1)
     else:
-        Nb()
-        if Var() == True:
-            if SymboleCourant(1) == "=":
+        if Digit() == True:
+            Nb()
+        else:
+            Var()
+            if word not in variables:
+                print("Variable innexistante !")
                 SymboleSuivant(1)
-                while SymboleCourant(1) == " ":
-                    SymboleSuivant(1)
-                ExprOR()
 
 # ----------------------------------------
 def Nb():
@@ -194,28 +216,17 @@ def Digit():
         return False
 #-----------------------------------------
 def Var():
+
     global word
-    tmp = ""
-    if SymboleCourant(1) == "i":
+
+    if SymboleCourant(1) in "isb":
+        word = SymboleCourant(1)
         SymboleSuivant(1)
         Word()
-        tmp = "i" + word
-        word = tmp
-        return True
-    elif SymboleCourant(1) == "s":
-        SymboleSuivant(1)
-        Word()
-        tmp = "s" + word
-        word = tmp
-        return True
-    elif SymboleCourant(1) == "b":
-        SymboleSuivant(1)
-        Word()
-        tmp = "b" + word
-        word = tmp
         return True
     else:
         return False
+
 #-----------------------------------------
 def Word():
     global word
@@ -245,10 +256,13 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> sVar = (2 + 33) * 5; bVal = 8 / 2 * 0xf0 sVar = 0b110 + bVal <stop")
+programme = ("start> sVar = (2 + 33) * 5; bVal = 8 / 2 * 0xf0; sVar = 0b110 + bVal <stop")
 codeCible = []
 posCourante = 0
 word = ""
+destination_word = ""
+
+variables = []
 if Prog() == True:
     for c in codeCible:
         print(c)
