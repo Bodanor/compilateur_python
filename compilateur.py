@@ -29,6 +29,8 @@ def SuiteInstruction():
 def Instruction():
     global word
     global destination_word
+    global declare
+    instru = ""
 
     if Var() == True:
         if SymboleCourant(1) == "=":
@@ -64,6 +66,27 @@ def Instruction():
             if destination_word[0] == "b":
                 codeCible.append("\t\tpop eax")
                 codeCible.append("\t\tmov {}, al".format(destination_word))
+
+    if programme[posCourante : posCourante + 5] == "print":
+        SymboleSuivant(5)
+        if not declare:
+            codeCible.insert(0, "#include <stdio.h>")
+            codeCible.insert(1,'const char msgAffichage[] = "Valeur = %d\\n";')
+            declare = 1
+        ExprOR()
+        codeCible.append("\t\tpush offset msgAffichage")
+        codeCible.append("\t\tcall dword ptr printf")
+        codeCible.append("\t\tadd esp, 8")
+    if programme[posCourante : posCourante + 5] == "input":
+        SymboleSuivant(5)
+        if not declare:
+
+            declare = 1
+        ExprOR()
+        codeCible.append("\t\tpush offset varSaisie")
+        codeCible.append("\t\tpush offset msgSaisie")
+        codeCible.append("\t\tcall dword ptr scanf")
+        codeCible.append("\t\tadd esp, 8")
 
 
     else:
@@ -266,12 +289,12 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> bVar = 3; sVar = 2 + bVar; iNb = 0b110 * sVar; iNb = iNb + 1 <stop")
+programme = ("start> sNombre = 45;print sNombre + 2;print -sNombre * 0b10 <stop")
 codeCible = []
 posCourante = 0
 word = ""
 destination_word = ""
-
+declare = 0
 variables = []
 if Prog() == True:
     for c in codeCible:
