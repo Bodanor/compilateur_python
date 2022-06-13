@@ -29,8 +29,31 @@ def SuiteInstruction():
 def Instruction():
     global word
     global destination_word
-    global declare
+    global declare_header
+    global declare_print
+    global declare_input
     instru = ""
+
+    if programme[posCourante : posCourante + 5] == "input":
+        SymboleSuivant(5)
+        if not declare_header:
+            codeCible.insert(0, "#include <stdio.h>")
+            declare_header = 1
+        if not declare_input:
+            codeCible.insert(1,'const char msgSaisie[] = "%d";')
+            codeCible.insert(2, 'const char msgEntrez[] = "Entrez une valeur : ";')
+            codeCible.insert(3, "int varSaisie;")
+            declare_input = 1
+
+        codeCible.append("\t\tpush offset msgEntrez")
+        codeCible.append("\t\tcall dword ptr printf")
+        codeCible.append("\t\tadd esp, 4")
+        codeCible.append("\t\tpush offset varSaisie")
+        codeCible.append("\t\tpush offset msgSaisie")
+        codeCible.append("\t\tcall dword ptr scanf")
+        codeCible.append("\t\tadd esp, 8")
+        codeCible.append("\t\tpush varSaisie")
+        codeCible.append("\t\tpop eax")
 
     if Var() == True:
         if SymboleCourant(1) == "=":
@@ -69,23 +92,16 @@ def Instruction():
 
     if programme[posCourante : posCourante + 5] == "print":
         SymboleSuivant(5)
-        if not declare:
+        if not declare_header:
             codeCible.insert(0, "#include <stdio.h>")
+            declare_header = 1
+
+        if not declare_print:
             codeCible.insert(1,'const char msgAffichage[] = "Valeur = %d\\n";')
-            declare = 1
+            declare_print = 1
         ExprOR()
         codeCible.append("\t\tpush offset msgAffichage")
         codeCible.append("\t\tcall dword ptr printf")
-        codeCible.append("\t\tadd esp, 8")
-    if programme[posCourante : posCourante + 5] == "input":
-        SymboleSuivant(5)
-        if not declare:
-
-            declare = 1
-        ExprOR()
-        codeCible.append("\t\tpush offset varSaisie")
-        codeCible.append("\t\tpush offset msgSaisie")
-        codeCible.append("\t\tcall dword ptr scanf")
         codeCible.append("\t\tadd esp, 8")
 
 
@@ -188,9 +204,9 @@ def Factor():
     elif Var():
         while Var():
             SymboleSuivant(1)
-        if word not in variables:
-            print("Variable innexistante !")
-            SymboleSuivant(1)
+        #if word not in variables:
+         #   print("Variable innexistante !")
+          #  SymboleSuivant(1)
         if word[0:1] in "sb":
             codeCible.append("\t\tmovsx eax, {}".format(word))
         else:
@@ -289,12 +305,14 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> sNombre = 45;print sNombre + 2;print -sNombre * 0b10 <stop")
+programme = ("start> input sNombre; input bNb; print sNombre * -bNb <stop")
 codeCible = []
 posCourante = 0
 word = ""
 destination_word = ""
-declare = 0
+declare_header = 0
+declare_print = 0
+declare_input = 0
 variables = []
 if Prog() == True:
     for c in codeCible:
