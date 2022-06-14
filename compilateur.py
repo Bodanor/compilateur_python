@@ -1,3 +1,24 @@
+#-----------------
+# Grammaire :
+# <Prog> → start>  <SuitesInstructions>  <stop
+# <SuitesInstructions> → <Instruction> | <SuiteInstructions>; <Instruction>
+# <Instruction> → <Var> =  <ExprOR> | print <ExprOR> | input <Var>
+# <ExprOR> → <ExprAND> | <ExprOR> | <ExprAND>
+# <ExprAND> →  <ExprPM> | <ExprAND> & <ExprPM>
+# <ExprPM> → <ExprFDM> | <ExprPM> + <ExprFDM> | <ExprPM> - <ExprFDM>
+# <ExprFDM> → <Sign> | <ExprFDM> * <Sign> | <ExprFDM>/ <Sign> | <ExprFDM>% <Sign>
+# <Sign> → <Factor> | - <Factor> | ~ <Factor>
+# <Factor> → ( <ExprOR> ) | <Nb> | <Var>
+# <Nb> →  0b<Binaire> | 0x<Hexa> | <Digit>
+# <Digit> → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+# <Binaire> → 0| 1
+# <Hexa> → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  | A | B | C | D | E | F | a | b | c | d | e | f
+# <Var> → i<Word> | s<Word> | b <Word>
+# <Word> → <Alph> | <Word> <Alph>
+# <Alph> → a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C|D|E|F|G|H|I|J|K|L|
+# M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z
+#------------------------------
+
 def Prog():
     SymboleSuivant(0)
     if SymboleCourant(6) == "start>":
@@ -323,7 +344,7 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> input sNombre; input bNb; print sNombre * -bNb <stop")
+programme = ("start> sVal = 0b110010 | 9008 / (2 * 0xf) <stop")
 codeCible = []
 posCourante = 0
 word = ""
