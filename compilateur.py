@@ -243,9 +243,9 @@ def Factor():
     elif Var():
         while Var():
             SymboleSuivant(1)
-        #if word not in variables:
-         #   print("Variable innexistante !")
-          #  SymboleSuivant(1)
+        if word not in variables:
+            print("Erreur position {} : {} n'a pas été déclaré précedemment".format(str(posCourante + 1), word))
+            exit(-1)
         if word[0:1] in "sb":
             codeCible.append("\t\tmovsx eax, {}".format(word))
         else:
@@ -318,12 +318,12 @@ def Var():
 #-----------------------------------------
 def Word():
     global word
-    while Alhp() == True :
+    while Alph() == True :
         word += SymboleCourant(1)
         SymboleSuivant(1)
 
 #-----------------------------------------
-def Alhp() :
+def Alph() :
     if SymboleCourant(1) in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
         return True
     else:
@@ -344,7 +344,7 @@ def SymboleSuivant(n):
 
 # ----------------------------------------
 
-programme = ("start> sVal = 0b110010 | 9008 / (2 * 0xf) <stop")
+programme = ("start> input sNombre;input bNb;print sNombre * -bNb <stop")
 codeCible = []
 posCourante = 0
 word = ""
