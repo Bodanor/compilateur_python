@@ -54,6 +54,24 @@ def Instruction():
         codeCible.append("\t\tadd esp, 8")
         codeCible.append("\t\tpush varSaisie")
         codeCible.append("\t\tpop eax")
+        if Var() == True:
+            if word not in variables:
+                variables.append(word)
+                if word[0] == "i":
+                    codeCible.insert(4, "int {};".format(word))
+                elif word[0] == "s":
+                    codeCible.insert(4, "short {};".format(word))
+                elif word[0] == "b":
+                    codeCible.insert(4, "char {};".format(word))
+
+            if word[0] == "i":
+                codeCible.append("\t\tmov {}, eax".format(word))
+            if word[0] == "s":
+                codeCible.append("\t\tmov {}, ax".format(word))
+            if word[0] == "b":
+                codeCible.append("\t\tmov {}, al".format(word))
+
+
 
     if Var() == True:
         if SymboleCourant(1) == "=":
